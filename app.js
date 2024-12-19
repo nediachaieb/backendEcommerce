@@ -1,5 +1,6 @@
 const express = require("express") 
 const mongoose =require("mongoose")
+const cors = require('cors')
 const app=express()
 const dotenv = require("dotenv")
 const categorie = require("./models/categorie")
@@ -11,8 +12,11 @@ const articleRouter =require("./route/article.route")
 require('dotenv').config()
 //dotenv.config()
 //BodyParser Middleware
+app.get("/",(req,res)=>
+    res.send("page d'acueil")
+)
 app.use(express.json()); 
-
+app.use(cors())
 // Connexion à la base données
 
 mongoose.connect(process.env.DATABASECLOUD)
