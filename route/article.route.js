@@ -35,15 +35,17 @@ router.get('/pagination', async(req, res) => {
 
 // créer un nouvel article
 router.post('/', async (req, res) => {
-    const nouvarticle = new Article(req.body)
+    const nouvarticle = new Article(req.body);
     try {
-    await nouvarticle.save();
-    res.status(200).json(nouvarticle ); 
-} catch (error) {
-    res.status(404).json({ message: error.message });
+        const response = await nouvarticle.save();
+        const articles = await Article.findById(response._id)
+            .populate("scategorieID")
+            .exec();
+        res.status(200).json(articles);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
     }
-    });
-
+});
 // chercher un article
 router.get('/:articleId',async(req, res)=>{
     try {
@@ -106,6 +108,25 @@ router.get('/cat/:categorieID', async (req, res) => {
 
 
 
-
+// modifier quantité seulement
+router.put('/qty/:id', async (req, res) => { console.log(req.body.quantity)
+    const qty = req.body.quantity||0;
+    const articleId=req.params.id||null;
+    const oldArticle=await Article.findById(articleId)
+    try {
+    const articleUpdated = await Article.findByIdAndUpdate(
+    articleId,
+    { qtestock: oldArticle.qtestock - qty},
+    { new: true } // Return the updated document
+    );
+    if (!articleUpdated) {
+    return res.status(404).json({ message: 'Product not found' });
+    }
+    const art = await
+    Article.findById(articleId).populate("scategorieID").exec();
+    res.status(200).json(art);
+    } catch (error) {
+    res.status(404).json({ message: error.message });
+    }});
     
     module.exports = router;    

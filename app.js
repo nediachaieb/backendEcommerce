@@ -1,6 +1,7 @@
 const express = require("express") 
 const mongoose =require("mongoose")
 const cors = require('cors')
+const path = require('path'); // Ajout de l'importation de path
 const app=express()
 const dotenv = require("dotenv")
 const categorie = require("./models/categorie")
@@ -9,14 +10,15 @@ const article = require("./models/article")
 const categorieRouter =require("./route/categorie.route")
 const scategorieRouter =require("./route/scategorie.route")
 const articleRouter =require("./route/article.route")
+const paymentStripeRouter =require("./route/paymentStripe.route.js")
 require('dotenv').config()
 //dotenv.config()
+
 //BodyParser Middleware
-app.get("/",(req,res)=>
-    res.send("page d'acueil")
-)
+
 app.use(express.json()); 
 app.use(cors())
+
 // Connexion à la base données
 
 mongoose.connect(process.env.DATABASECLOUD)
@@ -27,9 +29,11 @@ process.exit(); });
 app.use("/api/categories",categorieRouter)
 app.use('/api/scategories',scategorieRouter);
 app.use('/api/articles', articleRouter);
+app.use('/api/paymentStripe', paymentStripeRouter);
 
-
-app.listen(process.env.PORT, () => {
-    console.log(`Server is listening on port ${process.env.PORT}`); });
+//dist reactjs
+app.use(express.static(path.join(__dirname, './client/build'))); // Route pourles pages non trouvées, redirige vers index.html
+app.get('*', (req, res) => { res.sendFile(path.join(__dirname,'./client/build/index.html')); });
+app.listen(process.env.PORT, () => {console.log(`Server is listening on port ${process.env.PORT}`); });
 
 module.exports = app;
