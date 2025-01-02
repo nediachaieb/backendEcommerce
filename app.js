@@ -1,8 +1,9 @@
 const express = require("express") 
+const app=express()
 const mongoose =require("mongoose")
 const cors = require('cors')
 const path = require('path'); // Ajout de l'importation de path
-const app=express()
+
 const dotenv = require("dotenv")
 const categorie = require("./models/categorie")
 const scategorie = require("./models/scategorie")
@@ -10,7 +11,8 @@ const article = require("./models/article")
 const categorieRouter =require("./route/categorie.route")
 const scategorieRouter =require("./route/scategorie.route")
 const articleRouter =require("./route/article.route")
-const paymentStripeRouter =require("./route/paymentStripe.route.js")
+const paymentStripeRouter=require("./route/paymentStripe.route")
+const userRouter =require("./route/user.route")
 require('dotenv').config()
 //dotenv.config()
 
@@ -26,10 +28,12 @@ mongoose.connect(process.env.DATABASECLOUD)
 .catch(err => { console.log("Unable to connect to database", err);
 process.exit(); });
 
+// api 
 app.use("/api/categories",categorieRouter)
 app.use('/api/scategories',scategorieRouter);
 app.use('/api/articles', articleRouter);
 app.use('/api/paymentStripe', paymentStripeRouter);
+app.use('/api/users', userRouter);
 
 //dist reactjs
 app.use(express.static(path.join(__dirname, './client/build'))); // Route pourles pages non trouvées, redirige vers index.html
